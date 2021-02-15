@@ -124,7 +124,7 @@ button:hover {
 
 header {
     background-color: #2d4a22;
-    padding:2rem 0 10rem;
+    padding:2rem 0 13rem;
     text-align: center;
 }
 
@@ -136,17 +136,18 @@ header {
 
 
 #balance {
-    margin-top: -6rem;
+    margin-top: -7rem;
 }
 
 #balance h2 { 
     color: #fff;
 }
 
-#transaction {
+#transactions {
     display:block;
     width: 100%;
     overflow-x: auto;
+    margin-top: 3rem;
 }
 
 #data-table {
@@ -209,6 +210,7 @@ td.expense {
     justify-content: center;
     opacity: 0;
     visibility: hidden;
+    z-index: 999;
 }
 
 .modal-overlay.active {
@@ -219,7 +221,9 @@ td.expense {
 .modal {
     background: #f0f2f5;
     padding: 2.4rem;
-
+    position: relative;
+    z-index: 1;
+    position:fixed;
 }
 
 /* FORM */
