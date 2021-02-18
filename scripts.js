@@ -9,29 +9,20 @@ const Modal = {
     }
 }
 
+const Storage = {
+    get() {
+         return JSON.parse(localStorage.getItem('dev.finances:transactions')) || []
+    },
+        set(transactions) {
+            localStorage.setItem('dev.finances:transactions',JSON.stringify
+            (transactions));
+
+        }
+    }
+
+
 const Transaction = {
-    all: [
-        { 
-            description: 'Luz',
-            amount: -50000,
-            date: '23/01/2021',
-        },
-        {
-            description: 'Website',
-            amount: 500000,
-            date: '23/01/2021',
-        },
-        {
-            description: 'Internet',
-            amount: -20000,
-            date: '10/01/2021',
-        },
-        {
-            description: 'App',
-            amount: -50000,
-            date: '15/01/2021',
-        },
-    ],
+    all: Storage.get(),
 
     add(transaction) {
         Transaction.all.push(transaction);
@@ -39,7 +30,7 @@ const Transaction = {
     },
 
     remove(index) {
-        Transaction.all.splice(index, 1)
+        Transaction.all.splice(index, 1);
 
         App.reload()
     },
@@ -75,9 +66,10 @@ const DOM = {
     addTransaction(transaction, index) {
         const tr = document.createElement('tr')
         tr.innerHTML = DOM.innerHTMLTransaction(transaction)
+        tr.dataset.index = index
         DOM.transactionsContainer.appendChild(tr)
     },
-    innerHTMLTransaction(transaction) {
+    innerHTMLTransaction(transaction, index) {
 
         const CSSclass = transaction.amount > 0 ? 'income' : 'expense'
 
@@ -87,7 +79,9 @@ const DOM = {
             <td class="description">${transaction.description}</td>
             <td class="${CSSclass}">${amount}</td>
             <td class="date">${transaction.date}</td>
-            <td><img src="./assets/minus.svg" alt="Remover transação"></td>
+            <td>
+                <img onclick="Transaction.remove(${index})" src="./assets/minus.svg" alt="Remover transação">
+            </td>
             `
         return html
     },
@@ -115,7 +109,7 @@ const DOM = {
 const Utils = {
     formatAmount(value) {
         value = Number(value) * 100 
-        console.log(value) 
+        return value
     },
 
     formatDate(date) {
@@ -139,21 +133,6 @@ const Utils = {
     }
 }
 
-
-const App = {
-    init() {
-
-        Transaction.all.forEach(function(transaction) {
-            DOM.addTransaction(transaction)
-        })
-       
-        DOM.updateBalance()
-    },
-    reload() {
-        DOM.clearTransactions()
-        App.init()
-    },
-}
 
 const Form = {
 
@@ -215,8 +194,9 @@ const Form = {
         try {
             Form.validadeFields()
             const transaction = Form.formatValues()
-            Form.save(transaction)
+            Transaction.add(transaction)
             Form.clearFields()
+            Modal.close()
 
         } catch (error) {
             alert(error.message)
@@ -226,6 +206,25 @@ const Form = {
     }
     
 }
+
+
+const App = {
+    init() {
+
+        Transaction.all.forEach((transaction, index) => {
+            DOM.addTransaction(transaction, index);
+        })
+       
+        DOM.updateBalance()
+
+        Storage.set(Transaction.all)
+    },
+    reload() {
+        DOM.clearTransactions()
+        App.init()
+    },
+}
+
 App.init()
 
 // Transaction.remove(0)
